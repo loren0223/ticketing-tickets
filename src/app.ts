@@ -4,6 +4,7 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session'; // Transfer JWT via cookie
 
 import { createTicketRouter } from './routes/create';
+import { showTicketRouter } from './routes/show';
 
 import { errorHandler, NotFoundError, currentUser } from '@agreejwc/common';
 
@@ -20,7 +21,9 @@ app.use(
 ); // https://www.npmjs.com/package/cookie-session
 
 app.use(currentUser);
+
 app.use(createTicketRouter);
+app.use(showTicketRouter);
 
 app.all('*', async (req, res) => {
   // Fix Express async bug
