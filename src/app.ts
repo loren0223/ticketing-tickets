@@ -5,6 +5,8 @@ import cookieSession from 'cookie-session'; // Transfer JWT via cookie
 
 import { createTicketRouter } from './routes/create';
 import { showTicketRouter } from './routes/show';
+import { indexTicketRouter } from './routes/index';
+import { updateTicketRouter } from './routes/update';
 
 import { errorHandler, NotFoundError, currentUser } from '@agreejwc/common';
 
@@ -24,6 +26,8 @@ app.use(currentUser);
 
 app.use(createTicketRouter);
 app.use(showTicketRouter);
+app.use(indexTicketRouter);
+app.use(updateTicketRouter);
 
 app.all('*', async (req, res) => {
   // Fix Express async bug

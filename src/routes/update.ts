@@ -5,14 +5,15 @@ import { Ticket } from '../model/ticket';
 
 import {
   validateRequest,
-  BadRequestError,
   requireAuth,
+  NotFoundError,
+  NotAuthorizedError,
 } from '@agreejwc/common';
 
 const router = express.Router();
 
-router.post(
-  '/api/tickets',
+router.put(
+  '/api/tickets/:id',
   requireAuth,
   [
     body('title').notEmpty().withMessage('Title is required'),
@@ -22,20 +23,23 @@ router.post(
   ],
   validateRequest,
   async (req: Request, res: Response) => {
+    const id = req.params.id;
     const { title, price } = req.body;
-    const currentUser = req.currentuser!;
-    const userId = currentUser.id;
+    let ticket = await Ticket.findById(id);
 
-    // const existingTicket = await Ticket.findOne({ title });
-    // if (existingTicket) {
-    //   throw new BadRequestError('Ticket exists');
-    // }
+    if (!ticket) {
+      throw new NotFoundError('Ticket not found');
+    }
 
-    const ticket = Ticket.build({ title, price, userId });
-    await ticket.save();
+    if (ticket.userId !== req.currentuser!.id) {
+      throw new NotAuthorizedError();
+    }
 
-    res.status(201).send(ticket);
+    ticket.set({ title, price });
+    ticket = await ticket.save();
+
+    res.status(200).send(ticket);
   }
 );
 
-export { router as createTicketRouter };
+export { router as updateTicketRouter };

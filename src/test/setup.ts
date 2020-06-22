@@ -40,7 +40,10 @@ afterAll(async () => {
 
 // Create fake authentication cookie
 global.signin = () => {
-  const payload = { id: '1234567890', email: 'test@test.com' };
+  const payload = {
+    id: new mongoose.Types.ObjectId().toHexString(),
+    email: 'test@test.com',
+  };
   const token = jwt.sign(payload, process.env.JWT_SECRET_KEY!);
   const session = { jwt: token };
   const sessionJSON = JSON.stringify(session);
