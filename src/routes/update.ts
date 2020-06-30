@@ -10,6 +10,9 @@ import {
   NotAuthorizedError,
 } from '@agreejwc/common';
 
+import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
+import { natsWrapper } from '../nats-wrapper';
+
 const router = express.Router();
 
 router.put(
@@ -36,7 +39,14 @@ router.put(
     }
 
     ticket.set({ title, price });
-    ticket = await ticket.save();
+    await ticket.save();
+
+    await new TicketUpdatedPublisher(natsWrapper.client).publish({
+      id: ticket.id,
+      title: ticket.title,
+      price: ticket.price,
+      userId: ticket.userId,
+    });
 
     res.status(200).send(ticket);
   }
