@@ -10,14 +10,14 @@ interface TicketAttrs {
 }
 // An interface that describes the properties
 // that a Ticket Mode has
-interface TicketModel extends mongoose.Model<TicketDocument> {
-  build(attrs: TicketAttrs): TicketDocument;
+interface TicketModel extends mongoose.Model<TicketDoc> {
+  build(attrs: TicketAttrs): TicketDoc;
 }
 
 // For Issue #2
 // An interface that describes the properties
 // that a Ticket Document has
-interface TicketDocument extends mongoose.Document {
+interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
@@ -57,10 +57,7 @@ ticketSchema.statics.build = (attrs: TicketAttrs) => {
   return new Ticket(attrs);
 };
 // Define the User Model
-const Ticket = mongoose.model<TicketDocument, TicketModel>(
-  'Ticket',
-  ticketSchema
-);
+const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
 
 // Export Model
 export { Ticket };
