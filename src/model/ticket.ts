@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 // For Issue #1
 // An interface that describes the properties
@@ -21,6 +22,7 @@ interface TicketDoc extends mongoose.Document {
   title: string;
   price: number;
   userId: string;
+  version: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -51,6 +53,9 @@ const ticketSchema = new mongoose.Schema(
     },
   }
 );
+
+ticketSchema.set('versionKey', 'version');
+ticketSchema.plugin(updateIfCurrentPlugin);
 
 // Define the custom static method - build()
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
