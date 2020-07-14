@@ -101,3 +101,25 @@ it('update a ticket with valid inputs', async () => {
   expect(updateResponse.body.title).toEqual(title);
   expect(updateResponse.body.price).toEqual(price);
 });
+
+it('reject the editing if the ticket is reserved', async () => {
+  const cookie = global.signin();
+  const title = 'concern';
+  const price = 200;
+
+  const response = await request(app)
+    .post('/api/tickets')
+    .set('Cookie', cookie)
+    .send({ title: 'sport', price: 100 })
+    .expect(201);
+
+  const ticket = await Ticket.findById(response.body.id);
+  ticket?.set({ orderId: new mongoose.Types.ObjectId().toHexString() });
+  ticket?.save();
+
+  const updateResponse = await request(app)
+    .put(`/api/tickets/${response.body.id}`)
+    .set('Cookie', cookie)
+    .send({ title, price })
+    .expect(400);
+});

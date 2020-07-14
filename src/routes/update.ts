@@ -8,6 +8,7 @@ import {
   requireAuth,
   NotFoundError,
   NotAuthorizedError,
+  BadRequestError,
 } from '@agreejwc/common';
 
 import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
@@ -32,6 +33,10 @@ router.put(
 
     if (!ticket) {
       throw new NotFoundError('Ticket not found');
+    }
+
+    if (ticket.orderId) {
+      throw new BadRequestError('Ticket is reserved and can not be edited');
     }
 
     if (ticket.userId !== req.currentuser!.id) {
